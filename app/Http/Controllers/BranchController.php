@@ -12,7 +12,7 @@ public function index(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?',
             ['Load' ] 
         );
 
@@ -43,7 +43,7 @@ public function lookup(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?, @params = ?',
             ['Lookup' ,$params] 
         );
 
@@ -72,7 +72,7 @@ public function get(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?, @params = ?',
             ['get' ,$params] 
         );
 
@@ -112,7 +112,7 @@ public function get(Request $request) {
 //         Log::info('Upsert BranchRef params:', ['params' => $params]);
 
 //         DB::statement(
-//             'EXEC sproc_PHP_BranchRef @params = :params, @mode = :mode',
+//             'EXEC sproc_PHP_Ref_Branch @params = :params, @mode = :mode',
 //             [
 //                 'params' => $params,
 //                 'mode'   => 'upsert',
@@ -145,7 +145,7 @@ public function upsert(Request $request)
         $params = $request->get('json_data');
 
         // 1. Use DB::select to capture the Sproc's output (errormsg, errorcount)
-        $results = DB::select('EXEC sproc_PHP_BranchRef @params = :json_data, @mode = :mode', [
+        $results = DB::select('EXEC sproc_PHP_Ref_Branch @params = :json_data, @mode = :mode', [
             'json_data' => $params,
             'mode' => 'upsert'
         ]);
@@ -181,7 +181,7 @@ public function upsert(Request $request)
 //         Log::info('Deleting branch with params:', ['params' => $params]);
 
 //         // Call stored procedure
-//         DB::statement('EXEC sproc_PHP_BranchRef @params = :params, @mode = :mode', [
+//         DB::statement('EXEC sproc_PHP_Ref_Branch @params = :params, @mode = :mode', [
 //             'params' => $params,
 //             'mode' => 'Delete'
 //         ]);
@@ -214,7 +214,7 @@ public function delete(Request $request) {
       
 
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?, @params = ?',
             ['Delete', $params]
         );
 
@@ -242,7 +242,7 @@ public function checkInUsed(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?, @params = ?',
             ['CheckInUsed' ,$params] 
         );
 
@@ -274,7 +274,7 @@ public function checkDuplicate(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_BranchRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Branch @mode = ?, @params = ?',
             ['CheckDuplicate' ,$params] 
         );
 

@@ -23,10 +23,10 @@ class ApplyTenant
             return response()->json(['message' => "Missing {$headerName} header"], 400);
         }
 
-        // 2. Optimized JSON Loading via Cache
-        // This avoids reading the disk on every single API call
-        $tenants = Cache::rememberForever('tenant_configurations', function () {
-            $path = base_path(env('TENANT_JSON', 'storage/app/tenants.json'));
+        // 2. Cache by file version so edits to tenants.json are picked up.
+        $path = base_path(env('TENANT_JSON', 'storage/app/tenants.json'));
+        $cacheKey = 'tenant_configurations_' . md5($path . '|' . (is_file($path) ? filemtime($path) : ''));
+        $tenants = Cache::remember($cacheKey, (int) env('TENANT_CACHE_SECONDS', 300), function () use ($path) {
             if (!is_file($path)) return [];
             return json_decode(file_get_contents($path), true) ?? [];
         });
