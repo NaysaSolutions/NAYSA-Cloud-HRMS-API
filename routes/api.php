@@ -286,6 +286,11 @@ use App\Http\Controllers\WorkCenterController;
 
 
 
+use App\Http\Controllers\HolidayController;
+
+
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -640,6 +645,15 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBranch', [BranchController::class, 'delete']);
     Route::post('/checkDuplicateBranch', [BranchController::class, 'checkDuplicate']);
     Route::post('/checkInUsedBranch', [BranchController::class, 'checkInUsed']);
+
+
+    Route::get('/holiday', [HolidayController::class, 'index']);
+    Route::post('/holidayLookup', [HolidayController::class, 'lookup']);
+    Route::post('/getHoliday', [HolidayController::class, 'get']);
+    Route::post('/upsertHoliday', [HolidayController::class, 'upsert']);
+    Route::post('/deleteHoliday', [HolidayController::class, 'delete']);
+    Route::post('/checkInUsedHoliday', [HolidayController::class, 'checkInUsed']);
+    Route::post('/checkDuplicateHoliday', [HolidayController::class, 'checkDuplicate']);
 
 
     Route::get('/billCode', [BillCodeController::class, 'index']);

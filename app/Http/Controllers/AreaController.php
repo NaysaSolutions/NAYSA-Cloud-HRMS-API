@@ -14,7 +14,7 @@ class AreaController extends Controller
 
         try {
             $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?',
+                'EXEC sproc_PHP_Ref_Area @mode = ?',
                 ['Load']
             );
 
@@ -47,7 +47,7 @@ class AreaController extends Controller
 
         try {
             $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+                'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
                 ['Lookup', $params]
             );
 
@@ -78,8 +78,8 @@ class AreaController extends Controller
 
         try {
             $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
-                ['Get', $request->BILLTERM_CODE]
+                'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
+                ['Get', $request->AREA_CODE]
             );
 
             return response()->json([
@@ -108,7 +108,7 @@ class AreaController extends Controller
         $params = $request->input('json_data');
 
         $rows = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['Upsert', $params]
         );
 
@@ -152,7 +152,7 @@ public function checkInUsed(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['CheckInUsed' ,$params] 
         );
 
@@ -184,7 +184,7 @@ public function checkDuplicate(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['CheckDuplicate' ,$params] 
         );
 
@@ -223,7 +223,7 @@ public function checkDuplicate(Request $request) {
         ]);
 
         DB::statement(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['Delete', $params]
         );
 
