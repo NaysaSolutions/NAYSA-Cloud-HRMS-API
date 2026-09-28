@@ -26,6 +26,10 @@ use App\Http\Controllers\ATCController;
 use App\Http\Controllers\CurrController;
 use App\Http\Controllers\DForexController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\GovTAXController;
+use App\Http\Controllers\GovHDMFController;
+use App\Http\Controllers\GovPHController;
+use App\Http\Controllers\GovSSSController;
 
 
 
@@ -640,6 +644,30 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBranch', [BranchController::class, 'delete']);
     Route::post('/checkDuplicateBranch', [BranchController::class, 'checkDuplicate']);
     Route::post('/checkInUsedBranch', [BranchController::class, 'checkInUsed']);
+
+
+    Route::get('/govTax', [GovTAXController::class, 'index']);
+    Route::post('/upsertGovTax', [GovTAXController::class, 'upsert']);
+    Route::get('/lookupGovTax', [GovTAXController::class, 'lookup']);
+    Route::get('/getGovTax', [GovTAXController::class, 'get']);
+
+
+    Route::get('/govHdmf', [GovHDMFController::class, 'index']);
+    Route::post('/upsertGovHdmf', [GovHDMFController::class, 'upsert']);
+    Route::get('/lookupGovHdmf', [GovHDMFController::class, 'lookup']);
+    Route::get('/getGovHdmf', [GovHDMFController::class, 'get']);
+
+
+    Route::get('/govPh', [GovPHController::class, 'index']);
+    Route::post('/upsertGovPh', [GovPHController::class, 'upsert']);
+    Route::get('/lookupGovPh', [GovPHController::class, 'lookup']);
+    Route::get('/getGovPh', [GovPHController::class, 'get']);
+
+
+    Route::get('/govSss', [GovSSSController::class, 'index']);
+    Route::post('/upsertGovSss', [GovSSSController::class, 'upsert']);
+    Route::get('/lookupGovSss', [GovSSSController::class, 'lookup']);
+    Route::get('/getGovSss', [GovSSSController::class, 'get']);
 
 
     Route::get('/billCode', [BillCodeController::class, 'index']);
