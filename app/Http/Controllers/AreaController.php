@@ -13,8 +13,8 @@ class AreaController extends Controller
     {
 
         try {
-            $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?',
+            $results = DB::connection('tenant')->select(
+                'EXEC sproc_PHP_Ref_Area @mode = ?',
                 ['Load']
             );
 
@@ -46,8 +46,8 @@ class AreaController extends Controller
 
 
         try {
-            $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+            $results = DB::connection('tenant')->select(
+                'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
                 ['Lookup', $params]
             );
 
@@ -77,9 +77,9 @@ class AreaController extends Controller
         ]);
 
         try {
-            $results = DB::select(
-                'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
-                ['Get', $request->BILLTERM_CODE]
+            $results = DB::connection('tenant')->select(
+                'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
+                ['Get', $request->AREA_CODE]
             );
 
             return response()->json([
@@ -107,8 +107,8 @@ class AreaController extends Controller
     try {
         $params = $request->input('json_data');
 
-        $rows = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+        $rows = DB::connection('tenant')->select(
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['Upsert', $params]
         );
 
@@ -151,8 +151,8 @@ public function checkInUsed(Request $request) {
         $params = json_encode(['json_data' => $validated['json_data']]);
 
     try {
-        $results = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+        $results = DB::connection('tenant')->select(
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['CheckInUsed' ,$params] 
         );
 
@@ -183,8 +183,8 @@ public function checkDuplicate(Request $request) {
         $params = json_encode(['json_data' => $validated['json_data']]);
 
     try {
-        $results = DB::select(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+        $results = DB::connection('tenant')->select(
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['CheckDuplicate' ,$params] 
         );
 
@@ -208,12 +208,12 @@ public function checkDuplicate(Request $request) {
     ]);
 
     $data = $request->json_data;   // ← already array
-    $code = $data['billtermCode'] ?? null;
+    $code = $data['areaCode'] ?? null;
 
     if (!$code) {
         return response()->json([
             'success' => false,
-            'message' => 'BillTerm code is required.',
+            'message' => 'Area Code is required.',
         ], 400);
     }
 
@@ -222,8 +222,8 @@ public function checkDuplicate(Request $request) {
             'json_data' => $data
         ]);
 
-        DB::statement(
-            'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
+        DB::connection('tenant')->statement(
+            'EXEC sproc_PHP_Ref_Area @mode = ?, @params = ?',
             ['Delete', $params]
         );
 
