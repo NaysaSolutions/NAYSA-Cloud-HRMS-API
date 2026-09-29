@@ -17,6 +17,7 @@ use App\Http\Controllers\TemplateLayoutController;
 
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\EmployeeController;
 
 
 // GLOBAL REFERENCE - CONTROLLERS
@@ -344,6 +345,15 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkDuplicateArea', [AreaController::class, 'checkDuplicate']);
     Route::post('/checkInUsedArea', [AreaController::class, 'checkInUsed']);
     Route::post('/deleteArea', [AreaController::class, 'delete']);
+
+
+    Route::get('/employee', [EmployeeController::class, 'index']);
+    Route::get('/lookupEmployee', [EmployeeController::class, 'lookup']);
+    Route::get('/getEmployee', [EmployeeController::class, 'get']);
+    Route::post('/upsertEmployee', [EmployeeController::class, 'upsert']);
+    Route::post('/deleteEmployee', [EmployeeController::class, 'delete']);
+    Route::post('/checkDuplicateEmployee', [EmployeeController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
 
 
 });

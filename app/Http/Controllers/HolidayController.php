@@ -11,7 +11,7 @@ class HolidayController extends Controller
     public function index(Request $request)
     {
         try {
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?', ['Load']);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?', ['Load']);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -23,7 +23,7 @@ class HolidayController extends Controller
         $request->validate(['PARAMS' => 'required']);
         $params = $request->input('PARAMS');
         try {
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Lookup', $params]);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Lookup', $params]);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -34,7 +34,7 @@ class HolidayController extends Controller
     {
         $request->validate(['HOL_CODE' => 'required|string']);
         try {
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Get', $request->input('HOL_CODE')]);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Get', $request->input('HOL_CODE')]);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -45,7 +45,7 @@ class HolidayController extends Controller
     {
         try {
             $request->validate(['json_data' => 'required|json']);
-            $results = DB::select(
+            $results = DB::connection('tenant')->select(
                 'EXEC sproc_PHP_Ref_Holiday @params = :json_data, @mode = :mode',
                 ['json_data' => $request->get('json_data'), 'mode' => 'Upsert']
             );
@@ -61,7 +61,7 @@ class HolidayController extends Controller
         try {
             $validated = $request->validate(['json_data' => 'required|array']);
             $params = json_encode(['json_data' => $validated['json_data']]);
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Delete', $params]);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['Delete', $params]);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -73,7 +73,7 @@ class HolidayController extends Controller
         $validated = $request->validate(['json_data' => 'required|array']);
         $params = json_encode(['json_data' => $validated['json_data']]);
         try {
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['CheckInUsed', $params]);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['CheckInUsed', $params]);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -85,7 +85,7 @@ class HolidayController extends Controller
         $validated = $request->validate(['json_data' => 'required|array']);
         $params = json_encode(['json_data' => $validated['json_data']]);
         try {
-            $results = DB::select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['CheckDuplicate', $params]);
+            $results = DB::connection('tenant')->select('EXEC sproc_PHP_Ref_Holiday @mode = ?, @params = ?', ['CheckDuplicate', $params]);
             return response()->json(['success' => true, 'data' => $results], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
