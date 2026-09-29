@@ -29,6 +29,8 @@ use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
 use App\Http\Controllers\GovSSSController;
+use App\Http\Controllers\PayGroupController;
+use App\Http\Controllers\POSController;
 
 
 
@@ -330,6 +332,19 @@ Route::middleware('tenant')->group(function () {
     Route::post('/upsertGovSss', [GovSSSController::class, 'upsert']);
     Route::get('/lookupGovSss', [GovSSSController::class, 'lookup']);
     Route::get('/getGovSss', [GovSSSController::class, 'get']);
+
+    Route::get('/paygroup', [PaygroupController::class, 'index']);
+    Route::post('/upsertPayGroup', [PaygroupController::class, 'upsert']);
+    Route::post('/checkDuplicatePayGroup', [PaygroupController::class, 'checkDuplicate']);
+    Route::post('/deletePayGroup', [PaygroupController::class, 'delete']);
+    Route::post('/checkInUsedPayGroup', [PaygroupController::class, 'checkInUsed']);
+
+    Route::get('/pos', [POSController::class, 'index']);
+    Route::post('/upsertPOS', [POSController::class, 'upsert']);
+    Route::post('/checkDuplicatePOS', [POSController::class, 'checkDuplicate']);
+    Route::post('/deletePOS', [POSController::class, 'delete']);
+    Route::post('/checkInUsedPOS', [POSController::class, 'checkInUsed']);
+
 
     Route::get('/area', [AreaController::class, 'index']);
     Route::post('/upsertArea', [AreaController::class, 'upsert']);
