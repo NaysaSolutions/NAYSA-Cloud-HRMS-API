@@ -26,6 +26,7 @@ use App\Http\Controllers\ATCController;
 use App\Http\Controllers\CurrController;
 use App\Http\Controllers\DForexController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\BankInfoController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
@@ -644,6 +645,15 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBranch', [BranchController::class, 'delete']);
     Route::post('/checkDuplicateBranch', [BranchController::class, 'checkDuplicate']);
     Route::post('/checkInUsedBranch', [BranchController::class, 'checkInUsed']);
+
+
+    Route::get('/bankInfo', [BankInfoController::class, 'index']);
+    Route::post('/upsertBankInfo', [BankInfoController::class, 'upsert']);
+    Route::get('/lookupBankInfo', [BankInfoController::class, 'lookup']);
+    Route::get('/getBankInfo', [BankInfoController::class, 'get']);
+    Route::post('/deleteBankInfo', [BankInfoController::class, 'delete']);
+    Route::post('/checkDuplicateBankInfo', [BankInfoController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedBankInfo', [BankInfoController::class, 'checkInUsed']);
 
 
     Route::get('/govTax', [GovTAXController::class, 'index']);
