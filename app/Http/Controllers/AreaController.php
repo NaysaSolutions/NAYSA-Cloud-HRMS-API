@@ -79,7 +79,7 @@ class AreaController extends Controller
         try {
             $results = DB::select(
                 'EXEC sproc_PHP_AreaRef @mode = ?, @params = ?',
-                ['Get', $request->BILLTERM_CODE]
+                ['Get', $request->AREA_CODE]
             );
 
             return response()->json([
@@ -208,12 +208,12 @@ public function checkDuplicate(Request $request) {
     ]);
 
     $data = $request->json_data;   // ← already array
-    $code = $data['billtermCode'] ?? null;
+    $code = $data['areaCode'] ?? null;
 
     if (!$code) {
         return response()->json([
             'success' => false,
-            'message' => 'BillTerm code is required.',
+            'message' => 'Area code is required.',
         ], 400);
     }
 
