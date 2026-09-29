@@ -49,7 +49,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AccessRightsController;
 use App\Http\Controllers\MasterAccessRightsController;
 use App\Http\Controllers\ReportAccessRightsController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\AllTranApprovalController;
@@ -92,26 +92,18 @@ Route::middleware('tenant')->group(function () {
     Route::get('/getGlobalTables', [CompanyController::class, 'getGlobalTables']);
 
 
+    Route::prefix('user-management')->group(function () {
+        Route::get('/load', [UserManagementController::class, 'load']);
+        Route::get('/get', [UserManagementController::class, 'get']);
+        Route::get('/policy', [UserManagementController::class, 'getPolicy']);
 
-    Route::get('/getUser', [UserController::class, 'get']);
-    Route::get('/load', [UserController::class, 'load']);
-    Route::get('/lookupUserAll', [UserController::class, 'lookupAll']);
-    Route::post('/users/upsert', [UserController::class, 'upsert']);
-    Route::post('/users/approve', [UserController::class, 'approveAccount']);
-    Route::post('/users/delete', [UserController::class, 'delete']);
-    Route::post('/users/request-password-reset', [UserController::class, 'requestPasswordReset']);
-    Route::post('/users/change-password', [UserController::class, 'changePassword']);
-    Route::post('/users/checkduplicate', [UserController::class, 'checkDuplicate']);
-    Route::post('/users/checkinused', [UserController::class, 'checkInUsed']);
-    // Profile Image
-    Route::post('/user/profile-image', [UserController::class, 'uploadProfileImage']);
-    Route::get('/user/profile-image/{userCode}', [UserController::class, 'getProfileImage']);
-    Route::delete('/user/profile-image/{userCode}', [UserController::class, 'deleteProfileImage']);
-    //HS Security
-    Route::get('/security/policy',          [UserController::class, 'getPolicy']);
-    Route::post('/security/policy/upsert',  [UserController::class, 'upsertPolicy']);
-    Route::post('/getSecTrail', [UserController::class, 'getSecTrail']);
-    Route::post('/users/release-locked', [UserController::class, 'releaseLockedAccount']);
+        Route::post('/upsert', [UserManagementController::class, 'upsert']);
+        Route::post('/approve', [UserManagementController::class, 'approveAccount']);
+        Route::post('/delete', [UserManagementController::class, 'delete']);
+        Route::post('/checkduplicate', [UserManagementController::class, 'checkDuplicate']);
+        Route::post('/request-password-reset', [UserManagementController::class, 'requestPasswordReset']);
+        Route::post('/release-account', [UserManagementController::class, 'releaseLockedAccount']);
+    });
 
 
 
@@ -127,21 +119,12 @@ Route::middleware('tenant')->group(function () {
     Route::get('/menu-items', [MenuController::class, 'items']);
     Route::get('/menu-routes', [MenuController::class, 'routes']);
 
-    Route::get('/role', [AccessRightsController::class, 'loadRole']);
-    Route::get('/getRole', [AccessRightsController::class, 'getRole']);
-    Route::post('/deleteRole', [AccessRightsController::class, 'DeleteRole']);
-    Route::get('/loadRole', [AccessRightsController::class, 'getUsers']);
-    Route::get('/getRoleMenu', [AccessRightsController::class, 'getRoleMenu']);
-    Route::get('/getUserRoles', [AccessRightsController::class, 'getUserRoles']);
+    Route::get('/load', [AccessRightsController::class, 'load']);
+    Route::get('/getUserBranchAccess', [AccessRightsController::class, 'getUserBranchAccess']);
+    Route::post('/upsertUserBranchAccess', [AccessRightsController::class, 'upsertUserBranchAccess']);
+    Route::post('/getUserMenuAccess', [AccessRightsController::class, 'getUserMenuAccess']);
+    Route::post('/upsertUserMenuAccess', [AccessRightsController::class, 'upsertUserMenuAccess']);
 
-    Route::post('/upsertRole', [AccessRightsController::class, 'UpsertRole']);
-    Route::post('/upsertRoleMenu', [AccessRightsController::class, 'upsertRoleMenu']);
-    Route::post('/UpsertUserRole', [AccessRightsController::class, 'UpsertUserRole']);
-    Route::post('/upsert', [AccessRightsController::class, 'upsert']);
-    Route::post('/deleteUserRole', [AccessRightsController::class, 'deleteUserRole']);
-
-    Route::get('/checkDuplicateRole', [AccessRightsController::class, 'checkDuplicate']);
-    Route::get('/checkInUsedRole', [AccessRightsController::class, 'checkInUsed']);
 
     Route::prefix('master-access-rights')->group(function () {
         Route::get('/load-master-data', [MasterAccessRightsController::class, 'loadMasterData']);
