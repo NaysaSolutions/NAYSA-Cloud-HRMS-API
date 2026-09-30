@@ -775,8 +775,17 @@ class UserManagementController extends Controller
      * GET LOCK POLICY
      * ============================================================
      */
-    public function getPolicy()
+    public function getPolicy(Request $request)
     {
+        // Only Security Administrators may view/configure the login/password policy.
+        if ($this->actorType() !== 'X') {
+            return response()->json([
+                'success' => false,
+                'status'  => 'error',
+                'message' => 'Only a Security Administrator can access the Login / Password Policy.',
+            ], 403);
+        }
+
         try {
             $rows = $this->connection()->select(
                 'EXEC dbo.sproc_PHP_Users @mode = ?',
@@ -802,6 +811,93 @@ class UserManagementController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load login policy: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    /* ============================================================
+     * UPSERT LOGIN / PASSWORD POLICY
+     * Security Administrator only
+     * ============================================================
+     */
+    public function upsertPolicy(Request $request)
+    {
+        if ($this->actorType() !== 'X') {
+            return response()->json([
+                'success' => false,
+                'status'  => 'error',
+                'message' => 'Only a Security Administrator can update the Login / Password Policy.',
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'minimChar' => ['required', 'integer', 'min:0'],
+            'passExp'   => ['required', 'integer', 'min:0'],
+            'passHis'   => ['required', 'integer', 'min:0'],
+            'upLow'     => ['required', 'boolean'],
+            'letNum'    => ['required', 'boolean'],
+            'specChar'  => ['required', 'boolean'],
+            'maxLog'    => ['required', 'integer', 'min:0'],
+        ]);
+
+        $doneBy = $this->actorCode($request);
+
+        try {
+            $params = json_encode([
+                'json_data' => [
+                    'minimChar' => (int) $validated['minimChar'],
+                    'passExp'   => (int) $validated['passExp'],
+                    'passHis'   => (int) $validated['passHis'],
+                    'upLow'     => (bool) $validated['upLow'] ? 1 : 0,
+                    'letNum'    => (bool) $validated['letNum'] ? 1 : 0,
+                    'specChar'  => (bool) $validated['specChar'] ? 1 : 0,
+                    'maxLog'    => (int) $validated['maxLog'],
+                    'doneBy'    => $doneBy,
+                ],
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            $rows = $this->connection()->select(
+                'EXEC dbo.sproc_PHP_Users @mode = ?, @params = ?',
+                ['UpsertPolicy', $params]
+            );
+
+            $decoded = $this->decodeResultRow($rows);
+
+            if (
+                is_array($decoded)
+                && ($decoded['status'] ?? '') === 'success'
+            ) {
+                return response()->json([
+                    'success' => true,
+                    'status'  => 'success',
+                    'message' => $decoded['message'] ?? 'Login / Password Policy saved successfully.',
+                    'data'    => [
+                        'minimChar' => (int) $validated['minimChar'],
+                        'passExp'   => (int) $validated['passExp'],
+                        'passHis'   => (int) $validated['passHis'],
+                        'upLow'     => (bool) $validated['upLow'],
+                        'letNum'    => (bool) $validated['letNum'],
+                        'specChar'  => (bool) $validated['specChar'],
+                        'maxLog'    => (int) $validated['maxLog'],
+                    ],
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => false,
+                'status'  => 'error',
+                'message' => is_array($decoded)
+                    ? ($decoded['message'] ?? 'Failed to save Login / Password Policy.')
+                    : 'Failed to save Login / Password Policy.',
+            ], 422);
+        } catch (Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'status'  => 'error',
+                'message' => 'Failed to save Login / Password Policy: ' . $e->getMessage(),
             ], 500);
         }
     }

@@ -88,7 +88,7 @@ class AccessRightsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' =>
-                    $errorMsg ?:
+                $errorMsg ?:
                     'Unable to save access rights.',
                 'data' => [
                     'status' => 'error',
@@ -116,35 +116,34 @@ class AccessRightsController extends Controller
     |--------------------------------------------------------------------------
     */
     public function load(Request $request)
-{
-    try {
-        $status = $request->input('Status', 'Active');
+    {
+        try {
+            $status = $request->input('Status', 'Active');
 
-        $results = DB::connection('tenant')->select(
-            'EXEC dbo.sproc_PHP_Users @mode = ?, @params = ?',
-            [
-                'Load',
-                $status,
-            ]
-        );
+            $results = DB::connection('tenant')->select(
+                'EXEC dbo.sproc_PHP_Users @mode = ?, @params = ?',
+                [
+                    'Load',
+                    $status,
+                ]
+            );
 
-        return response()->json([
-            'success' => true,
-            'data' => $results,
-        ], 200);
+            return response()->json([
+                'success' => true,
+                'data' => $results,
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('AccessRights load error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
-    } catch (\Throwable $e) {
-        Log::error('AccessRights load error', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-        ]);
-
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage(),
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 
 
     /*
@@ -193,10 +192,8 @@ class AccessRightsController extends Controller
                 'success' => true,
                 'data' => $this->decodeSprocResult($results),
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
-
         } catch (\Throwable $e) {
             Log::error('getUserBranchAccess error', [
                 'message' => $e->getMessage(),
@@ -262,10 +259,8 @@ class AccessRightsController extends Controller
                 $results,
                 'User branch access saved successfully.'
             );
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
-
         } catch (\Throwable $e) {
             Log::error('upsertUserBranchAccess error', [
                 'message' => $e->getMessage(),
@@ -280,24 +275,223 @@ class AccessRightsController extends Controller
         }
     }
 
+    public function loadPaygroups(Request $request)
+    {
+        try {
+            $results = DB::connection('tenant')->select(
+                'EXEC dbo.sproc_PHP_Ref_PayGroup @mode = ?',
+                ['Load']
+            );
 
-    /*
-    |--------------------------------------------------------------------------
-    | GET USER MENU ACCESS
-    |--------------------------------------------------------------------------
-    |
-    | POST /getUserMenuAccess
-    |
-    | {
-    |   "json_data": {
-    |     "dt2": [
-    |       {"userCode":"AGA"},
-    |       {"userCode":"CALVIN"}
-    |     ]
-    |   }
-    | }
-    |
-    */
+            return response()->json([
+                'success' => true,
+                'data' => $this->decodeSprocResult($results),
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('loadPaygroups error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to load paygroups.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getUserPaygroupAccess(Request $request)
+    {
+        try {
+            $request->validate([
+                'json_data' => 'required|array',
+                'json_data.dt2' => 'required|array|min:1',
+                'json_data.dt2.*.userCode' => 'required|string',
+            ]);
+
+            $userCodes = collect(
+                $request->input('json_data.dt2', [])
+            )
+                ->pluck('userCode')
+                ->map(fn($code) => trim((string) $code))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $rows = DB::connection('tenant')
+                ->table('ACCESS_USERS_PAYGROUP')
+                ->selectRaw(
+                    'USER_CODE as userCode, GROUP_CODE as paygroupCode'
+                )
+                ->whereIn('USER_CODE', $userCodes)
+                ->orderBy('USER_CODE')
+                ->orderBy('GROUP_CODE')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $rows,
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('getUserPaygroupAccess error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to load User Paygroup Access.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function upsertUserPaygroupAccess(Request $request)
+    {
+        try {
+            if (
+                $fixedCode =
+                $this->fixedAccounts()->findInPayload(
+                    $request->all()
+                )
+            ) {
+                return $this->fixedAccountManagementError(
+                    $fixedCode
+                );
+            }
+
+            $request->validate([
+                'json_data' => 'required|array',
+
+                'json_data.dt1' => 'nullable|array',
+                'json_data.dt1.*.paygroupCode' => 'required|string',
+
+                'json_data.dt2' => 'required|array|min:1',
+                'json_data.dt2.*.userCode' => 'required|string',
+            ]);
+
+            $groupCodes = collect(
+                $request->input('json_data.dt1', [])
+            )
+                ->pluck('paygroupCode')
+                ->map(
+                    fn($code) =>
+                    strtoupper(trim((string) $code))
+                )
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+            $userCodes = collect(
+                $request->input('json_data.dt2', [])
+            )
+                ->pluck('userCode')
+                ->map(
+                    fn($code) =>
+                    trim((string) $code)
+                )
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+
+            if (!empty($groupCodes)) {
+                $validGroupCodes = DB::connection('tenant')
+                    ->table('REF_PAYGROUP')
+                    ->whereIn('GROUP_CODE', $groupCodes)
+                    ->where('ACTIVE', 'Y')
+                    ->pluck('GROUP_CODE')
+                    ->map(
+                        fn($code) =>
+                        strtoupper(trim((string) $code))
+                    )
+                    ->all();
+
+                $invalid = array_diff(
+                    $groupCodes,
+                    $validGroupCodes
+                );
+
+                if (!empty($invalid)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' =>
+                        'Invalid or inactive Paygroup Code(s): ' .
+                            implode(', ', $invalid),
+                    ], 422);
+                }
+            }
+            DB::connection('tenant')->transaction(
+                function () use (
+                    $userCodes,
+                    $groupCodes
+                ) {
+                    DB::connection('tenant')
+                        ->table('ACCESS_USERS_PAYGROUP')
+                        ->whereIn(
+                            'USER_CODE',
+                            $userCodes
+                        )
+                        ->delete();
+
+
+                    if (empty($groupCodes)) {
+                        return;
+                    }
+
+
+                    $insertRows = [];
+
+                    foreach ($userCodes as $userCode) {
+                        foreach ($groupCodes as $groupCode) {
+                            $insertRows[] = [
+                                'USER_CODE' => $userCode,
+                                'GROUP_CODE' => $groupCode,
+                            ];
+                        }
+                    }
+
+
+                    DB::connection('tenant')
+                        ->table('ACCESS_USERS_PAYGROUP')
+                        ->insert($insertRows);
+                }
+            );
+
+
+            return response()->json([
+                'success' => true,
+                'message' =>
+                'User paygroup access saved successfully.',
+                'data' => [
+                    'status' => 'success',
+                ],
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('upsertUserPaygroupAccess error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                'Error saving User Paygroup Access.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+
     public function getUserMenuAccess(Request $request)
     {
         try {
@@ -327,10 +521,8 @@ class AccessRightsController extends Controller
                 'success' => true,
                 'data' => $this->decodeSprocResult($results),
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
-
         } catch (\Throwable $e) {
             Log::error('getUserMenuAccess error', [
                 'message' => $e->getMessage(),
@@ -346,33 +538,9 @@ class AccessRightsController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPSERT USER MENU ACCESS
-    |--------------------------------------------------------------------------
-    |
-    | POST /upsertUserMenuAccess
-    |
-    | {
-    |   "json_data": {
-    |     "dt1": [
-    |       {
-    |         "menuCode":"HR0110",
-    |         "permissionType":"FULL"
-    |       },
-    |       {
-    |         "menuCode":"GR0200",
-    |         "permissionType":"READ"
-    |       }
-    |     ],
-    |     "dt2": [
-    |       {"userCode":"AGA"},
-    |       {"userCode":"CALVIN"}
-    |     ]
-    |   }
-    | }
-    |
-    */
+
+
+
     public function upsertUserMenuAccess(Request $request)
     {
         try {
@@ -422,7 +590,7 @@ class AccessRightsController extends Controller
                 })
                 ->filter(
                     fn($row) =>
-                        $row['menuCode'] !== ''
+                    $row['menuCode'] !== ''
                 )
                 ->unique('menuCode')
                 ->values()
@@ -442,7 +610,7 @@ class AccessRightsController extends Controller
                 })
                 ->filter(
                     fn($row) =>
-                        $row['userCode'] !== ''
+                    $row['userCode'] !== ''
                 )
                 ->unique('userCode')
                 ->values()
@@ -474,10 +642,8 @@ class AccessRightsController extends Controller
                 $results,
                 'User menu access saved successfully.'
             );
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
-
         } catch (\Throwable $e) {
             Log::error('upsertUserMenuAccess error', [
                 'message' => $e->getMessage(),

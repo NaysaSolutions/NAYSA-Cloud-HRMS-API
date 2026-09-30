@@ -25,6 +25,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CutoffController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BankInfoController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
@@ -98,7 +100,7 @@ Route::middleware('tenant')->group(function () {
         Route::get('/load', [UserManagementController::class, 'load']);
         Route::get('/get', [UserManagementController::class, 'get']);
         Route::get('/policy', [UserManagementController::class, 'getPolicy']);
-
+        Route::post('/policy/upsert', [UserManagementController::class, 'upsertPolicy']);
         Route::post('/upsert', [UserManagementController::class, 'upsert']);
         Route::post('/approve', [UserManagementController::class, 'approveAccount']);
         Route::post('/delete', [UserManagementController::class, 'delete']);
@@ -106,6 +108,7 @@ Route::middleware('tenant')->group(function () {
         Route::post('/request-password-reset', [UserManagementController::class, 'requestPasswordReset']);
         Route::post('/release-account', [UserManagementController::class, 'releaseLockedAccount']);
     });
+
 
 
 
@@ -122,8 +125,11 @@ Route::middleware('tenant')->group(function () {
     Route::get('/menu-routes', [MenuController::class, 'routes']);
 
     Route::get('/load', [AccessRightsController::class, 'load']);
-    Route::get('/getUserBranchAccess', [AccessRightsController::class, 'getUserBranchAccess']);
+    Route::post('/getUserBranchAccess', [AccessRightsController::class, 'getUserBranchAccess']);
     Route::post('/upsertUserBranchAccess', [AccessRightsController::class, 'upsertUserBranchAccess']);
+    Route::get('/loadPaygroups', [AccessRightsController::class, 'loadPaygroups']);
+    Route::post('/getUserPaygroupAccess', [AccessRightsController::class, 'getUserPaygroupAccess']);
+    Route::post('/upsertUserPaygroupAccess', [AccessRightsController::class, 'upsertUserPaygroupAccess']);
     Route::post('/getUserMenuAccess', [AccessRightsController::class, 'getUserMenuAccess']);
     Route::post('/upsertUserMenuAccess', [AccessRightsController::class, 'upsertUserMenuAccess']);
 
@@ -141,6 +147,25 @@ Route::middleware('tenant')->group(function () {
         Route::post('upsert-user-report-data',  [ReportAccessRightsController::class, 'upsertUserReportData']);
         Route::post('delete-user-report-data',  [ReportAccessRightsController::class, 'deleteUserReportData']);
     });
+
+
+    Route::get('/refLeave', [LeaveController::class, 'index']);
+    Route::get('/lookupRefLeave', [LeaveController::class, 'lookup']);
+    Route::get('/getRefLeave', [LeaveController::class, 'get']);
+
+    Route::post('/upsertRefLeave', [LeaveController::class, 'upsert']);
+    Route::post('/deleteRefLeave', [LeaveController::class, 'delete']);
+    Route::post('/checkDuplicateRefLeave', [LeaveController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefLeave', [LeaveController::class, 'checkInUsed']);
+
+    Route::get('/refOvertime', [OvertimeController::class, 'index']);
+    Route::get('/lookupRefOvertime', [OvertimeController::class, 'lookup']);
+    Route::get('/getRefOvertime', [OvertimeController::class, 'get']);
+
+    Route::post('/upsertRefOvertime', [OvertimeController::class, 'upsert']);
+    Route::post('/deleteRefOvertime', [OvertimeController::class, 'delete']);
+    Route::post('/checkDuplicateRefOvertime', [OvertimeController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefOvertime', [OvertimeController::class, 'checkInUsed']);
 
     //Printing
     Route::prefix('printing')->group(function () {
@@ -179,13 +204,13 @@ Route::middleware('tenant')->group(function () {
     Route::post('/getMSINVReport', [PrintingController::class, 'getMSINV_Report']);
     Route::post('/getRMINVReport', [PrintingController::class, 'getRMINV_Report']);
 
-	
+
 
 
     //Dev Express Printing
     Route::post('/print-dxr-form', [PrintingController::class, 'printDxrForm']);
     Route::post('/open-dxr-viewer', [PrintingController::class, 'openDxrViewer']);
-    Route::post('/print-dxr-report', [PrintingController::class, 'printDxrReport']);            
+    Route::post('/print-dxr-report', [PrintingController::class, 'printDxrReport']);
 
 
 
@@ -243,7 +268,7 @@ Route::middleware('tenant')->group(function () {
     Route::post('/upsertRCType', [RCTypeController::class, 'upsert']);
 
 
-    
+
     Route::get('/bank', [BankMasterController::class, 'index']);
     Route::post('/upsertBank', [BankMasterController::class, 'upsert']);
     Route::get('/lookupBank', [BankMasterController::class, 'lookup']);
@@ -252,7 +277,7 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBank', [BankMasterController::class, 'delete']);
     Route::post('/checkInUsedBank', [BankMasterController::class, 'checkInUsed']);
     Route::get('/validateDuplicateCheck', [BankMasterController::class, 'validateDuplicateCheck']);
-    
+
 
     Route::get('/cOA', [COAMasterController::class, 'index']);
     Route::post('/upsertCOA', [COAMasterController::class, 'upsert']);
@@ -362,7 +387,4 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteEmployee', [EmployeeController::class, 'delete']);
     Route::post('/checkDuplicateEmployee', [EmployeeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
-
-
 });
-
