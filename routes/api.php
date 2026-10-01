@@ -27,6 +27,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BankInfoController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
@@ -166,6 +167,14 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteRefOvertime', [OvertimeController::class, 'delete']);
     Route::post('/checkDuplicateRefOvertime', [OvertimeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedRefOvertime', [OvertimeController::class, 'checkInUsed']);
+
+    Route::get('/refEmployeeStatus', [EmployeeStatusController::class, 'index']);
+    Route::get('/lookupRefEmployeeStatus', [EmployeeStatusController::class, 'lookup']);
+    Route::get('/getRefEmployeeStatus', [EmployeeStatusController::class, 'get']);
+    Route::post('/upsertRefEmployeeStatus', [EmployeeStatusController::class, 'upsert']);
+    Route::post('/deleteRefEmployeeStatus', [EmployeeStatusController::class, 'delete']);
+    Route::post('/checkDuplicateRefEmployeeStatus', [EmployeeStatusController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefEmployeeStatus', [EmployeeStatusController::class, 'checkInUsed']);
 
     //Printing
     Route::prefix('printing')->group(function () {
