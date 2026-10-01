@@ -59,6 +59,10 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\AllTranApprovalController;
 
 
+// TRANSACTIONS - CONTROLLERS
+use App\Http\Controllers\TimesheetController;
+
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -109,6 +113,8 @@ Route::middleware('tenant')->group(function () {
         Route::post('/release-account', [UserManagementController::class, 'releaseLockedAccount']);
     });
 
+    // Route::get('/getUser', [UserController::class, 'getUser']);
+
 
 
 
@@ -132,7 +138,6 @@ Route::middleware('tenant')->group(function () {
     Route::post('/upsertUserPaygroupAccess', [AccessRightsController::class, 'upsertUserPaygroupAccess']);
     Route::post('/getUserMenuAccess', [AccessRightsController::class, 'getUserMenuAccess']);
     Route::post('/upsertUserMenuAccess', [AccessRightsController::class, 'upsertUserMenuAccess']);
-
 
     Route::prefix('master-access-rights')->group(function () {
         Route::get('/load-master-data', [MasterAccessRightsController::class, 'loadMasterData']);
@@ -387,4 +392,22 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteEmployee', [EmployeeController::class, 'delete']);
     Route::post('/checkDuplicateEmployee', [EmployeeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
+
+
+
+    // Put this inside your existing tenant/authenticated middleware group if applicable.
+    Route::prefix('timesheet')->controller(TimesheetController::class)->group(function () {
+        Route::post('/load', 'load');
+        Route::post('/generate', 'generate');
+        Route::post('/recalculate', 'recalculate');
+        Route::post('/get', 'get');
+        Route::post('/validate', 'validateTimesheet');
+        Route::post('/finalize', 'finalize');
+        Route::post('/unfinalize', 'unfinalize');
+        Route::post('/loadPayItem', 'loadPayItem');
+    });
+
+
+
+
 });
