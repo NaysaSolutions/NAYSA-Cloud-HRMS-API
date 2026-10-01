@@ -27,13 +27,14 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BankInfoController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
 use App\Http\Controllers\GovSSSController;
 use App\Http\Controllers\PayGroupController;
 use App\Http\Controllers\POSController;
-
+use App\Http\Controllers\ClientController;
 
 
 // GENERAL LEDGER - REFERENCE FILE CONTROLLERS
@@ -171,6 +172,14 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteRefOvertime', [OvertimeController::class, 'delete']);
     Route::post('/checkDuplicateRefOvertime', [OvertimeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedRefOvertime', [OvertimeController::class, 'checkInUsed']);
+
+    Route::get('/refEmployeeStatus', [EmployeeStatusController::class, 'index']);
+    Route::get('/lookupRefEmployeeStatus', [EmployeeStatusController::class, 'lookup']);
+    Route::get('/getRefEmployeeStatus', [EmployeeStatusController::class, 'get']);
+    Route::post('/upsertRefEmployeeStatus', [EmployeeStatusController::class, 'upsert']);
+    Route::post('/deleteRefEmployeeStatus', [EmployeeStatusController::class, 'delete']);
+    Route::post('/checkDuplicateRefEmployeeStatus', [EmployeeStatusController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefEmployeeStatus', [EmployeeStatusController::class, 'checkInUsed']);
 
     //Printing
     Route::prefix('printing')->group(function () {
@@ -374,6 +383,12 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkDuplicatePOS', [POSController::class, 'checkDuplicate']);
     Route::post('/deletePOS', [POSController::class, 'delete']);
     Route::post('/checkInUsedPOS', [POSController::class, 'checkInUsed']);
+
+    Route::get('/client', [ClientController::class, 'index']);
+    Route::post('/upsertClient', [ClientController::class, 'upsert']);
+    Route::post('/checkDuplicateClient', [ClientController::class, 'checkDuplicate']);
+    Route::post('/deleteClient', [ClientController::class, 'delete']);
+    Route::post('/checkInUsedClient', [ClientController::class, 'checkInUsed']);
 
 
     Route::get('/area', [AreaController::class, 'index']);
