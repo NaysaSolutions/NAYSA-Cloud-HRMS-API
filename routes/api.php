@@ -33,7 +33,7 @@ use App\Http\Controllers\GovPHController;
 use App\Http\Controllers\GovSSSController;
 use App\Http\Controllers\PayGroupController;
 use App\Http\Controllers\POSController;
-
+use App\Http\Controllers\ClientController;
 
 
 // GENERAL LEDGER - REFERENCE FILE CONTROLLERS
@@ -369,6 +369,12 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkDuplicatePOS', [POSController::class, 'checkDuplicate']);
     Route::post('/deletePOS', [POSController::class, 'delete']);
     Route::post('/checkInUsedPOS', [POSController::class, 'checkInUsed']);
+
+    Route::get('/client', [ClientController::class, 'index']);
+    Route::post('/upsertClient', [ClientController::class, 'upsert']);
+    Route::post('/checkDuplicateClient', [ClientController::class, 'checkDuplicate']);
+    Route::post('/deleteClient', [ClientController::class, 'delete']);
+    Route::post('/checkInUsedClient', [ClientController::class, 'checkInUsed']);
 
 
     Route::get('/area', [AreaController::class, 'index']);
