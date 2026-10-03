@@ -25,6 +25,10 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CutoffController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BankInfoController;
+use App\Http\Controllers\LeaveCreditController;
+use App\Http\Controllers\GenerateLeaveCreditController;
+use App\Http\Controllers\LeaveLedgerController;
+use App\Http\Controllers\LeaveCreditBalanceController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
@@ -323,6 +327,26 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBankInfo', [BankInfoController::class, 'delete']);
     Route::post('/checkDuplicateBankInfo', [BankInfoController::class, 'checkDuplicate']);
     Route::post('/checkInUsedBankInfo', [BankInfoController::class, 'checkInUsed']);
+
+    Route::get('/leaveCredit', [LeaveCreditController::class, 'index']);
+    Route::post('/upsertLeaveCredit', [LeaveCreditController::class, 'upsert']);
+    Route::get('/lookupLeaveCredit', [LeaveCreditController::class, 'lookup']);
+    Route::get('/getLeaveCredit', [LeaveCreditController::class, 'get']);
+    Route::post('/deleteLeaveCredit', [LeaveCreditController::class, 'delete']);
+    Route::post('/checkDuplicateLeaveCredit', [LeaveCreditController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedLeaveCredit', [LeaveCreditController::class, 'checkInUsed']);
+
+    Route::get('/generateLeaveCredits/references', [GenerateLeaveCreditController::class, 'references']);
+    Route::post('/generateLeaveCredits/preview', [GenerateLeaveCreditController::class, 'generate']);
+    Route::post('/generateLeaveCredits/save', [GenerateLeaveCreditController::class, 'save']);
+
+    Route::get('/leaveLedger/references', [LeaveLedgerController::class, 'references']);
+    Route::post('/leaveLedger/load', [LeaveLedgerController::class, 'load']);
+
+    Route::get('/leaveCreditBalance/references', [LeaveCreditBalanceController::class, 'references']);
+    Route::post('/leaveCreditBalance/load', [LeaveCreditBalanceController::class, 'load']);
+    Route::post('/leaveCreditBalance/recalculate', [LeaveCreditBalanceController::class, 'recalculate']);
+    Route::post('/leaveCreditBalance/save', [LeaveCreditBalanceController::class, 'save']);
 
 
     Route::get('/govTax', [GovTAXController::class, 'index']);
