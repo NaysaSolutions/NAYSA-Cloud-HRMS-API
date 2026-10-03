@@ -29,11 +29,16 @@ use App\Http\Controllers\LeaveCreditController;
 use App\Http\Controllers\GenerateLeaveCreditController;
 use App\Http\Controllers\LeaveLedgerController;
 use App\Http\Controllers\LeaveCreditBalanceController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
 use App\Http\Controllers\GovPHController;
 use App\Http\Controllers\GovSSSController;
-
+use App\Http\Controllers\PayGroupController;
+use App\Http\Controllers\POSController;
+use App\Http\Controllers\ClientController;
 
 
 // GENERAL LEDGER - REFERENCE FILE CONTROLLERS
@@ -53,10 +58,14 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AccessRightsController;
 use App\Http\Controllers\MasterAccessRightsController;
 use App\Http\Controllers\ReportAccessRightsController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\AllTranApprovalController;
+
+
+// TRANSACTIONS - CONTROLLERS
+use App\Http\Controllers\TimesheetController;
 
 
 
@@ -96,26 +105,21 @@ Route::middleware('tenant')->group(function () {
     Route::get('/getGlobalTables', [CompanyController::class, 'getGlobalTables']);
 
 
+    Route::prefix('user-management')->group(function () {
+        Route::get('/load', [UserManagementController::class, 'load']);
+        Route::get('/get', [UserManagementController::class, 'get']);
+        Route::get('/policy', [UserManagementController::class, 'getPolicy']);
+        Route::post('/policy/upsert', [UserManagementController::class, 'upsertPolicy']);
+        Route::post('/upsert', [UserManagementController::class, 'upsert']);
+        Route::post('/approve', [UserManagementController::class, 'approveAccount']);
+        Route::post('/delete', [UserManagementController::class, 'delete']);
+        Route::post('/checkduplicate', [UserManagementController::class, 'checkDuplicate']);
+        Route::post('/request-password-reset', [UserManagementController::class, 'requestPasswordReset']);
+        Route::post('/release-account', [UserManagementController::class, 'releaseLockedAccount']);
+    });
 
-    Route::get('/getUser', [UserController::class, 'get']);
-    Route::get('/load', [UserController::class, 'load']);
-    Route::get('/lookupUserAll', [UserController::class, 'lookupAll']);
-    Route::post('/users/upsert', [UserController::class, 'upsert']);
-    Route::post('/users/approve', [UserController::class, 'approveAccount']);
-    Route::post('/users/delete', [UserController::class, 'delete']);
-    Route::post('/users/request-password-reset', [UserController::class, 'requestPasswordReset']);
-    Route::post('/users/change-password', [UserController::class, 'changePassword']);
-    Route::post('/users/checkduplicate', [UserController::class, 'checkDuplicate']);
-    Route::post('/users/checkinused', [UserController::class, 'checkInUsed']);
-    // Profile Image
-    Route::post('/user/profile-image', [UserController::class, 'uploadProfileImage']);
-    Route::get('/user/profile-image/{userCode}', [UserController::class, 'getProfileImage']);
-    Route::delete('/user/profile-image/{userCode}', [UserController::class, 'deleteProfileImage']);
-    //HS Security
-    Route::get('/security/policy',          [UserController::class, 'getPolicy']);
-    Route::post('/security/policy/upsert',  [UserController::class, 'upsertPolicy']);
-    Route::post('/getSecTrail', [UserController::class, 'getSecTrail']);
-    Route::post('/users/release-locked', [UserController::class, 'releaseLockedAccount']);
+    // Route::get('/getUser', [UserController::class, 'getUser']);
+
 
 
 
@@ -131,21 +135,14 @@ Route::middleware('tenant')->group(function () {
     Route::get('/menu-items', [MenuController::class, 'items']);
     Route::get('/menu-routes', [MenuController::class, 'routes']);
 
-    Route::get('/role', [AccessRightsController::class, 'loadRole']);
-    Route::get('/getRole', [AccessRightsController::class, 'getRole']);
-    Route::post('/deleteRole', [AccessRightsController::class, 'DeleteRole']);
-    Route::get('/loadRole', [AccessRightsController::class, 'getUsers']);
-    Route::get('/getRoleMenu', [AccessRightsController::class, 'getRoleMenu']);
-    Route::get('/getUserRoles', [AccessRightsController::class, 'getUserRoles']);
-
-    Route::post('/upsertRole', [AccessRightsController::class, 'UpsertRole']);
-    Route::post('/upsertRoleMenu', [AccessRightsController::class, 'upsertRoleMenu']);
-    Route::post('/UpsertUserRole', [AccessRightsController::class, 'UpsertUserRole']);
-    Route::post('/upsert', [AccessRightsController::class, 'upsert']);
-    Route::post('/deleteUserRole', [AccessRightsController::class, 'deleteUserRole']);
-
-    Route::get('/checkDuplicateRole', [AccessRightsController::class, 'checkDuplicate']);
-    Route::get('/checkInUsedRole', [AccessRightsController::class, 'checkInUsed']);
+    Route::get('/load', [AccessRightsController::class, 'load']);
+    Route::post('/getUserBranchAccess', [AccessRightsController::class, 'getUserBranchAccess']);
+    Route::post('/upsertUserBranchAccess', [AccessRightsController::class, 'upsertUserBranchAccess']);
+    Route::get('/loadPaygroups', [AccessRightsController::class, 'loadPaygroups']);
+    Route::post('/getUserPaygroupAccess', [AccessRightsController::class, 'getUserPaygroupAccess']);
+    Route::post('/upsertUserPaygroupAccess', [AccessRightsController::class, 'upsertUserPaygroupAccess']);
+    Route::post('/getUserMenuAccess', [AccessRightsController::class, 'getUserMenuAccess']);
+    Route::post('/upsertUserMenuAccess', [AccessRightsController::class, 'upsertUserMenuAccess']);
 
     Route::prefix('master-access-rights')->group(function () {
         Route::get('/load-master-data', [MasterAccessRightsController::class, 'loadMasterData']);
@@ -160,6 +157,33 @@ Route::middleware('tenant')->group(function () {
         Route::post('upsert-user-report-data',  [ReportAccessRightsController::class, 'upsertUserReportData']);
         Route::post('delete-user-report-data',  [ReportAccessRightsController::class, 'deleteUserReportData']);
     });
+
+
+    Route::get('/refLeave', [LeaveController::class, 'index']);
+    Route::get('/lookupRefLeave', [LeaveController::class, 'lookup']);
+    Route::get('/getRefLeave', [LeaveController::class, 'get']);
+
+    Route::post('/upsertRefLeave', [LeaveController::class, 'upsert']);
+    Route::post('/deleteRefLeave', [LeaveController::class, 'delete']);
+    Route::post('/checkDuplicateRefLeave', [LeaveController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefLeave', [LeaveController::class, 'checkInUsed']);
+
+    Route::get('/refOvertime', [OvertimeController::class, 'index']);
+    Route::get('/lookupRefOvertime', [OvertimeController::class, 'lookup']);
+    Route::get('/getRefOvertime', [OvertimeController::class, 'get']);
+
+    Route::post('/upsertRefOvertime', [OvertimeController::class, 'upsert']);
+    Route::post('/deleteRefOvertime', [OvertimeController::class, 'delete']);
+    Route::post('/checkDuplicateRefOvertime', [OvertimeController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefOvertime', [OvertimeController::class, 'checkInUsed']);
+
+    Route::get('/refEmployeeStatus', [EmployeeStatusController::class, 'index']);
+    Route::get('/lookupRefEmployeeStatus', [EmployeeStatusController::class, 'lookup']);
+    Route::get('/getRefEmployeeStatus', [EmployeeStatusController::class, 'get']);
+    Route::post('/upsertRefEmployeeStatus', [EmployeeStatusController::class, 'upsert']);
+    Route::post('/deleteRefEmployeeStatus', [EmployeeStatusController::class, 'delete']);
+    Route::post('/checkDuplicateRefEmployeeStatus', [EmployeeStatusController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefEmployeeStatus', [EmployeeStatusController::class, 'checkInUsed']);
 
     //Printing
     Route::prefix('printing')->group(function () {
@@ -198,13 +222,13 @@ Route::middleware('tenant')->group(function () {
     Route::post('/getMSINVReport', [PrintingController::class, 'getMSINV_Report']);
     Route::post('/getRMINVReport', [PrintingController::class, 'getRMINV_Report']);
 
-	
+
 
 
     //Dev Express Printing
     Route::post('/print-dxr-form', [PrintingController::class, 'printDxrForm']);
     Route::post('/open-dxr-viewer', [PrintingController::class, 'openDxrViewer']);
-    Route::post('/print-dxr-report', [PrintingController::class, 'printDxrReport']);            
+    Route::post('/print-dxr-report', [PrintingController::class, 'printDxrReport']);
 
 
 
@@ -262,7 +286,7 @@ Route::middleware('tenant')->group(function () {
     Route::post('/upsertRCType', [RCTypeController::class, 'upsert']);
 
 
-    
+
     Route::get('/bank', [BankMasterController::class, 'index']);
     Route::post('/upsertBank', [BankMasterController::class, 'upsert']);
     Route::get('/lookupBank', [BankMasterController::class, 'lookup']);
@@ -271,7 +295,7 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteBank', [BankMasterController::class, 'delete']);
     Route::post('/checkInUsedBank', [BankMasterController::class, 'checkInUsed']);
     Route::get('/validateDuplicateCheck', [BankMasterController::class, 'validateDuplicateCheck']);
-    
+
 
     Route::get('/cOA', [COAMasterController::class, 'index']);
     Route::post('/upsertCOA', [COAMasterController::class, 'upsert']);
@@ -372,6 +396,25 @@ Route::middleware('tenant')->group(function () {
     Route::get('/lookupGovSss', [GovSSSController::class, 'lookup']);
     Route::get('/getGovSss', [GovSSSController::class, 'get']);
 
+    Route::get('/paygroup', [PaygroupController::class, 'index']);
+    Route::post('/upsertPayGroup', [PaygroupController::class, 'upsert']);
+    Route::post('/checkDuplicatePayGroup', [PaygroupController::class, 'checkDuplicate']);
+    Route::post('/deletePayGroup', [PaygroupController::class, 'delete']);
+    Route::post('/checkInUsedPayGroup', [PaygroupController::class, 'checkInUsed']);
+
+    Route::get('/pos', [POSController::class, 'index']);
+    Route::post('/upsertPOS', [POSController::class, 'upsert']);
+    Route::post('/checkDuplicatePOS', [POSController::class, 'checkDuplicate']);
+    Route::post('/deletePOS', [POSController::class, 'delete']);
+    Route::post('/checkInUsedPOS', [POSController::class, 'checkInUsed']);
+
+    Route::get('/client', [ClientController::class, 'index']);
+    Route::post('/upsertClient', [ClientController::class, 'upsert']);
+    Route::post('/checkDuplicateClient', [ClientController::class, 'checkDuplicate']);
+    Route::post('/deleteClient', [ClientController::class, 'delete']);
+    Route::post('/checkInUsedClient', [ClientController::class, 'checkInUsed']);
+
+
     Route::get('/area', [AreaController::class, 'index']);
     Route::post('/upsertArea', [AreaController::class, 'upsert']);
     Route::get('/lookupArea', [AreaController::class, 'lookup']);
@@ -390,5 +433,20 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
 
 
-});
 
+    // Put this inside your existing tenant/authenticated middleware group if applicable.
+    Route::prefix('timesheet')->controller(TimesheetController::class)->group(function () {
+        Route::post('/load', 'load');
+        Route::post('/generate', 'generate');
+        Route::post('/recalculate', 'recalculate');
+        Route::post('/get', 'get');
+        Route::post('/validate', 'validateTimesheet');
+        Route::post('/finalize', 'finalize');
+        Route::post('/unfinalize', 'unfinalize');
+        Route::post('/loadPayItem', 'loadPayItem');
+    });
+
+
+
+
+});
