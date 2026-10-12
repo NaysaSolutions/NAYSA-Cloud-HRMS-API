@@ -64,6 +64,8 @@ use App\Http\Controllers\AllTranApprovalController;
 
 // TRANSACTIONS - CONTROLLERS
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\LoanManagementController;
+use App\Http\Controllers\LoanController;
 
 
 
@@ -430,6 +432,14 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkDuplicateEmployee', [EmployeeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
 
+    Route::get('/refLoan', [LoanController::class, 'index']);
+    Route::get('/lookupRefLoan', [LoanController::class, 'lookup']);
+    Route::get('/getRefLoan', [LoanController::class, 'get']);
+    Route::post('/upsertRefLoan', [LoanController::class, 'upsert']);
+    Route::post('/deleteRefLoan', [LoanController::class, 'delete']);
+    Route::post('/checkDuplicateRefLoan', [LoanController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefLoan', [LoanController::class, 'checkInUsed']);
+
 
 
     // Put this inside your existing tenant/authenticated middleware group if applicable.
@@ -442,6 +452,18 @@ Route::middleware('tenant')->group(function () {
         Route::post('/finalize', 'finalize');
         Route::post('/unfinalize', 'unfinalize');
         Route::post('/loadPayItem', 'loadPayItem');
+    });
+
+    Route::prefix('loanTransactions')->controller(LoanManagementController::class)->group(function () {
+        Route::post('/list', 'index');
+        Route::get('/selectionReferences', 'selectionReferences');
+        Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/get', 'get');
+        Route::post('/save', 'save');
+        Route::post('/post', 'post');
+        Route::post('/cancel', 'cancel')->middleware('posting.credential');
+        Route::post('/paymentHistory', 'paymentHistory');
+        Route::post('/history', 'history');
     });
 
 
