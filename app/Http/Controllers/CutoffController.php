@@ -47,8 +47,8 @@ public function lookup(Request $request) {
 
     try {
         $results = DB::select(
-            'EXEC sproc_PHP_CutoffRef @mode = ?, @params = ?',
-            ['Lookup' ,$params] 
+            'EXEC sproc_PHP_Ref_Cutoff @mode = ?, @params = ?',
+            ['Load', $params]
         );
 
         return response()->json([
