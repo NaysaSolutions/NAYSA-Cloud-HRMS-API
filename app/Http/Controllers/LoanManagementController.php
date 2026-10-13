@@ -55,7 +55,6 @@ class LoanManagementController extends Controller
             'jsonData.loanId' => 'nullable|string|max:50',
             'jsonData.transactionDate' => 'required|date',
             'jsonData.cutoffFrequency' => 'required|string|in:S,M,D',
-            'jsonData.cutoffCode' => 'required|string|max:8',
             'jsonData.remarks' => 'nullable|string|max:4000',
             'jsonData.userCode' => 'required|string|max:100',
             'jsonData.rows' => 'required|array|min:1',
