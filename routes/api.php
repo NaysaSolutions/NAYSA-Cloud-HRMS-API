@@ -27,6 +27,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BankInfoController;
 use App\Http\Controllers\LeaveCreditController;
 use App\Http\Controllers\LeaveManagementController;
+use App\Http\Controllers\PayrollYearEndController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\EmployeeStatusController;
@@ -372,6 +373,15 @@ Route::middleware('tenant')->group(function () {
     Route::post('/leaveCreditBalance/recalculate', [LeaveManagementController::class, 'recalculateBalances']);
     Route::post('/leaveCreditBalance/save', [LeaveManagementController::class, 'saveBalances']);
 
+    Route::get('/bonusProcessing/references', [PayrollYearEndController::class, 'bonusReferences']);
+    Route::post('/bonusProcessing/load', [PayrollYearEndController::class, 'loadBonus']);
+
+    Route::get('/taxReconciliation/references', [PayrollYearEndController::class, 'taxReconReferences']);
+    Route::post('/taxReconciliation/load', [PayrollYearEndController::class, 'loadTaxRecon']);
+
+    Route::get('/birAlphalist/references', [PayrollYearEndController::class, 'alphalistReferences']);
+    Route::post('/birAlphalist/load', [PayrollYearEndController::class, 'loadAlphalist']);
+
 
     Route::get('/govTax', [GovTAXController::class, 'index']);
     Route::post('/upsertGovTax', [GovTAXController::class, 'upsert']);
@@ -464,6 +474,8 @@ Route::middleware('tenant')->group(function () {
         Route::post('/cancel', 'cancel')->middleware('posting.credential');
         Route::post('/paymentHistory', 'paymentHistory');
         Route::post('/history', 'history');
+        Route::get('/ledgerReferences', 'ledgerReferences');
+        Route::post('/ledger', 'loadLedger');
     });
 
 

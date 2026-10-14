@@ -120,6 +120,26 @@ class LoanManagementController extends Controller
         return $this->runProcedure('History', $this->encodeJsonData($jsonData));
     }
 
+    public function ledgerReferences()
+    {
+        return $this->runNamedProcedure('sproc_PHP_Inq_LoanLedger', 'References');
+    }
+
+    public function loadLedger(Request $request)
+    {
+        $data = $request->validate([
+            'jsonData' => 'required|array',
+            'jsonData.frequency' => 'required|string|in:S,M,D',
+            'jsonData.cutoffCode' => 'required|string|max:8',
+        ]);
+
+        return $this->runNamedProcedure(
+            'sproc_PHP_Inq_LoanLedger',
+            'Load',
+            $this->encodeJsonData($data['jsonData']),
+        );
+    }
+
     private function runDocumentAction(Request $request, string $mode)
     {
         $data = $request->validate([
@@ -152,6 +172,27 @@ class LoanManagementController extends Controller
             return response()->json(['success' => true, 'data' => $results]);
         } catch (\Throwable $exception) {
             Log::error('Loan transaction procedure failed.', [
+                'mode' => $mode,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function runNamedProcedure(string $procedure, string $mode, ?string $params = null)
+    {
+        try {
+            $results = $params === null
+                ? DB::select("EXEC {$procedure} @mode = ?", [$mode])
+                : DB::select("EXEC {$procedure} @mode = ?, @params = ?", [$mode, $params]);
+
+            return response()->json(['success' => true, 'data' => $results]);
+        } catch (\Throwable $exception) {
+            Log::error('Loan ledger procedure failed.', [
                 'mode' => $mode,
                 'error' => $exception->getMessage(),
             ]);
