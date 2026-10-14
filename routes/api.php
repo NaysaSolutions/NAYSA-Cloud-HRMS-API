@@ -65,6 +65,7 @@ use App\Http\Controllers\AllTranApprovalController;
 
 // TRANSACTIONS - CONTROLLERS
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\LeaveTransactionController;
 use App\Http\Controllers\LoanManagementController;
 use App\Http\Controllers\LoanController;
 
@@ -463,6 +464,20 @@ Route::middleware('tenant')->group(function () {
         Route::post('/unfinalize', 'unfinalize');
         Route::post('/loadPayItem', 'loadPayItem');
     });
+
+    
+    Route::prefix('leave-transaction')->middleware('auth:sanctum')->group(function () {
+        Route::post('/references', [LeaveTransactionController::class, 'references']);
+        Route::post('/employees', [LeaveTransactionController::class, 'employees']);
+        Route::post('/load', [LeaveTransactionController::class, 'load']);
+        Route::post('/get', [LeaveTransactionController::class, 'get']);
+        Route::post('/upsert', [LeaveTransactionController::class, 'upsert']);
+        Route::post('/delete', [LeaveTransactionController::class, 'delete']);
+        Route::post('/validate', [LeaveTransactionController::class, 'validateLeave']);
+        Route::post('/finalize', [LeaveTransactionController::class, 'finalizeLeave']);
+        Route::post('/unfinalize', [LeaveTransactionController::class, 'unfinalizeLeave']);
+    });
+
 
     Route::prefix('loanTransactions')->controller(LoanManagementController::class)->group(function () {
         Route::post('/list', 'index');
