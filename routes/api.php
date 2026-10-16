@@ -38,6 +38,8 @@ use App\Http\Controllers\GovSSSController;
 use App\Http\Controllers\PayGroupController;
 use App\Http\Controllers\POSController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\EmployeeGovInfo;
+use App\Http\Controllers\EmployeeGovParams;
 
 
 // GENERAL LEDGER - REFERENCE FILE CONTROLLERS
@@ -425,6 +427,11 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteClient', [ClientController::class, 'delete']);
     Route::post('/checkInUsedClient', [ClientController::class, 'checkInUsed']);
 
+    Route::get('/employeeGovParams', [EmployeeGovParams::class, 'index']);
+    Route::post('/upsertEmployeeGovParams', [EmployeeGovParams::class, 'upsert']);
+
+    Route::get('/employeeGovInfo', [EmployeeGovInfo::class, 'index']);
+    Route::post('/upsertEmployeeGovInfo', [EmployeeGovInfo::class, 'upsert']);
 
     Route::get('/area', [AreaController::class, 'index']);
     Route::post('/upsertArea', [AreaController::class, 'upsert']);
