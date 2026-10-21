@@ -291,6 +291,26 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
+
+
+
+//HR-PAY Controller 
+
+
+//Global Reference 
+use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\RefRCController;
+use App\Http\Controllers\RefDeptTypeController;
+use App\Http\Controllers\RefDeptGroupController;
+use App\Http\Controllers\RefDepartmentController;
+use App\Http\Controllers\RefLoanController;
+use App\Http\Controllers\RefEDController;
+use App\Http\Controllers\RefPayrollPeriodController;
+
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -306,8 +326,6 @@ Route::get('/companies', [AuthController::class, 'companies']);
 Route::post('/send-mail', [MailController::class, 'send']);
 
 
-
-
 Route::middleware('tenant')->group(function () {
 
     Route::post('/register', [AuthController::class, 'register']);
@@ -321,8 +339,87 @@ Route::middleware('tenant')->group(function () {
     Route::get('/getCompany', [CompanyController::class, 'get']);
     Route::get('/getGlobalTables', [CompanyController::class, 'getGlobalTables']);
 
+    Route::get('/shift', [ShiftController::class, 'index']);
+    Route::post('/upsertShift', [ShiftController::class, 'upsert']);
+    Route::post('/deleteShift', [ShiftController::class, 'delete']);
+    Route::post('/checkDuplicateShift', [ShiftController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedShift', [ShiftController::class, 'checkInUsed']);
+
+    Route::get('/refRC', [RefRCController::class, 'index']);
+    Route::post('/upsertRefRC', [RefRCController::class, 'upsert']);
+    Route::post('/deleteRefRC', [RefRCController::class, 'delete']);
+    Route::post('/checkDuplicateRefRC', [RefRCController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefRC', [RefRCController::class, 'checkInUsed']);
+    Route::get('/lookupRefRC', [RefRCController::class, 'lookup']);
+
+    Route::get('/refDeptType', [RefDeptTypeController::class, 'index']);
+    Route::post('/upsertRefDeptType', [RefDeptTypeController::class, 'upsert']);
+    Route::post('/deleteRefDeptType', [RefDeptTypeController::class, 'delete']);
+    Route::post('/checkDuplicateRefDeptType', [RefDeptTypeController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefDeptType', [RefDeptTypeController::class, 'checkInUsed']);
+    Route::get('/lookupRefDeptType', [RefDeptTypeController::class, 'lookup']);
 
 
+    Route::get('/refDeptGroup', [RefDeptGroupController::class, 'index']);
+    Route::post('/upsertRefDeptGroup', [RefDeptGroupController::class, 'upsert']);
+    Route::post('/deleteRefDeptGroup', [RefDeptGroupController::class, 'delete']);
+    Route::post('/checkDuplicateRefDeptGroup', [RefDeptGroupController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefDeptGroup', [RefDeptGroupController::class, 'checkInUsed']);
+    Route::get('/lookupRefDeptGroup', [RefDeptGroupController::class, 'lookup']);
+
+
+
+
+    Route::get('/refDepartment', [RefDepartmentController::class, 'index']);
+    Route::post('/upsertRefDepartment', [RefDepartmentController::class, 'upsert']);
+    Route::post('/deleteRefDepartment', [RefDepartmentController::class, 'delete']);
+    Route::post('/checkDuplicateRefDepartment', [RefDepartmentController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefDepartment', [RefDepartmentController::class, 'checkInUsed']);
+
+
+
+    Route::get('/refLoan', [RefLoanController::class, 'index']);
+    Route::post('/upsertRefLoan', [RefLoanController::class, 'upsert']);
+    Route::post('/deleteRefLoan', [RefLoanController::class, 'delete']);
+    Route::post('/checkDuplicateRefLoan', [RefLoanController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefLoan', [RefLoanController::class, 'checkInUsed']);
+    Route::get('/lookupRefLoan', [RefLoanController::class, 'lookup']);
+
+
+
+    Route::get('/refED', [RefEDController::class, 'index']);
+    Route::post('/upsertRefED', [RefEDController::class, 'upsert']);
+    Route::post('/deleteRefED', [RefEDController::class, 'delete']);
+    Route::post('/checkDuplicateRefED', [RefEDController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefED', [RefEDController::class, 'checkInUsed']);
+    Route::get('/lookupRefED', [RefEDController::class, 'lookup']);
+    Route::get('/getRefED', [RefEDController::class, 'get']);
+
+
+    Route::get('/cutOff', [RefPayrollPeriodController::class, 'index']);
+    Route::post('/upsertCutOff', [RefPayrollPeriodController::class, 'upsert']);
+    Route::get('/lookupCutOff', [RefPayrollPeriodController::class, 'lookup']);
+    Route::get('/getCutOff', [RefPayrollPeriodController::class, 'get']);
+    Route::post('/deleteCutOff', [RefPayrollPeriodController::class, 'delete']);
+    Route::post('/checkInUsedCutOff', [RefPayrollPeriodController::class, 'checkInUsed']);
+    Route::post('/checkDuplicateCutOff', [RefPayrollPeriodController::class, 'checkDuplicate']);
+    Route::get('/loadCutOff', [RefPayrollPeriodController::class, 'index']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     Route::get('/getUser', [UserController::class, 'get']);
     Route::get('/load', [UserController::class, 'load']);
     Route::get('/lookupUserAll', [UserController::class, 'lookupAll']);
@@ -555,14 +652,6 @@ Route::middleware('tenant')->group(function () {
 
 
 
-    Route::get('/cutOff', [CutoffController::class, 'index']);
-    Route::post('/upsertCutOff', [CutoffController::class, 'upsert']);
-    Route::get('/lookupCutOff', [CutoffController::class, 'lookup']);
-    Route::get('/getCutOff', [CutoffController::class, 'get']);
-    Route::post('/deleteCutOff', [CutoffController::class, 'delete']);
-    Route::post('/checkInUsedCutOff', [CutoffController::class, 'checkInUsed']);
-    Route::post('/checkDuplicateCutOff', [CutoffController::class, 'checkDuplicate']);
-    Route::get('/loadCutOff', [CutoffController::class, 'index']);
 
     Route::get('/rCType', [RCTypeController::class, 'index']);
     Route::post('/upsertRCType', [RCTypeController::class, 'upsert']);
