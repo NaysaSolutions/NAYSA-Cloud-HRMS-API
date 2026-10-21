@@ -70,6 +70,8 @@ use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\LeaveTransactionController;
 use App\Http\Controllers\LoanManagementController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\OvertimeTransactionController;
+
 
 
 
@@ -161,13 +163,12 @@ Route::middleware('tenant')->group(function () {
 
     // Route::get('/getUser', [UserController::class, 'getUser']);
 
-<<<<<<< HEAD
-    Route::get('/refDeptGroup', [RefDeptGroupController::class, 'index']);
-    Route::post('/upsertRefDeptGroup', [RefDeptGroupController::class, 'upsert']);
-    Route::post('/deleteRefDeptGroup', [RefDeptGroupController::class, 'delete']);
-    Route::post('/checkDuplicateRefDeptGroup', [RefDeptGroupController::class, 'checkDuplicate']);
-    Route::post('/checkInUsedRefDeptGroup', [RefDeptGroupController::class, 'checkInUsed']);
-    Route::get('/lookupRefDeptGroup', [RefDeptGroupController::class, 'lookup']);
+    //Route::get('/refDeptGroup', [RefDeptGroupController::class, 'index']);
+   //Route::post('/upsertRefDeptGroup', [RefDeptGroupController::class, 'upsert']);
+    //Route::post('/deleteRefDeptGroup', [RefDeptGroupController::class, 'delete']);
+    //Route::post('/checkDuplicateRefDeptGroup', [RefDeptGroupController::class, 'checkDuplicate']);
+    //Route::post('/checkInUsedRefDeptGroup', [RefDeptGroupController::class, 'checkInUsed']);
+    //Route::get('/lookupRefDeptGroup', [RefDeptGroupController::class, 'lookup']);
 
 
 
@@ -186,6 +187,12 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkDuplicateRefLoan', [RefLoanController::class, 'checkDuplicate']);
     Route::post('/checkInUsedRefLoan', [RefLoanController::class, 'checkInUsed']);
     Route::get('/lookupRefLoan', [RefLoanController::class, 'lookup']);
+
+
+
+
+
+    
 
 
 
@@ -241,8 +248,6 @@ Route::middleware('tenant')->group(function () {
     Route::post('/security/policy/upsert',  [UserController::class, 'upsertPolicy']);
     Route::post('/getSecTrail', [UserController::class, 'getSecTrail']);
     Route::post('/users/release-locked', [UserController::class, 'releaseLockedAccount']);
-=======
->>>>>>> 8a7595774e0eb6a2c5724f89e7663c4e06ad314c
 
 
 
@@ -396,7 +401,6 @@ Route::middleware('tenant')->group(function () {
 
 
 
-<<<<<<< HEAD
 
 
     Route::POST('/atc', [ATCController::class, 'index']);
@@ -410,7 +414,6 @@ Route::middleware('tenant')->group(function () {
 
 
 
-=======
     Route::get('/cutOff', [CutoffController::class, 'index']);
     Route::post('/upsertCutOff', [CutoffController::class, 'upsert']);
     Route::get('/lookupCutOff', [CutoffController::class, 'lookup']);
@@ -419,7 +422,6 @@ Route::middleware('tenant')->group(function () {
     Route::post('/checkInUsedCutOff', [CutoffController::class, 'checkInUsed']);
     Route::post('/checkDuplicateCutOff', [CutoffController::class, 'checkDuplicate']);
     Route::get('/loadCutOff', [CutoffController::class, 'index']);
->>>>>>> 8a7595774e0eb6a2c5724f89e7663c4e06ad314c
 
     Route::get('/rCType', [RCTypeController::class, 'index']);
     Route::post('/upsertRCType', [RCTypeController::class, 'upsert']);
@@ -595,6 +597,7 @@ Route::middleware('tenant')->group(function () {
 
 
 
+
     // Put this inside your existing tenant/authenticated middleware group if applicable.
     Route::prefix('timesheet')->controller(TimesheetController::class)->group(function () {
         Route::post('/load', 'load');
@@ -619,6 +622,19 @@ Route::middleware('tenant')->group(function () {
         Route::post('/finalize', [LeaveTransactionController::class, 'finalizeLeave']);
         Route::post('/unfinalize', [LeaveTransactionController::class, 'unfinalizeLeave']);
     });
+
+    
+    Route::prefix('overtimeTransactions')->controller(OvertimeTransactionController::class)->group(function () {
+        Route::post('/list', 'index');
+        Route::get('/selectionReferences', 'selectionReferences');
+        Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/get', 'get');
+        Route::post('/save', 'save');
+        Route::post('/post', 'post');
+        Route::post('/cancel', 'cancel')->middleware('posting.credential');
+        Route::post('/history', 'history');
+    });
+
 
 
     Route::prefix('loanTransactions')->controller(LoanManagementController::class)->group(function () {
