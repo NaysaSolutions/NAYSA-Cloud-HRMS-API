@@ -414,14 +414,14 @@ Route::middleware('tenant')->group(function () {
 
 
 
-    Route::get('/cutOff', [CutoffController::class, 'index']);
-    Route::post('/upsertCutOff', [CutoffController::class, 'upsert']);
-    Route::get('/lookupCutOff', [CutoffController::class, 'lookup']);
-    Route::get('/getCutOff', [CutoffController::class, 'get']);
-    Route::post('/deleteCutOff', [CutoffController::class, 'delete']);
-    Route::post('/checkInUsedCutOff', [CutoffController::class, 'checkInUsed']);
-    Route::post('/checkDuplicateCutOff', [CutoffController::class, 'checkDuplicate']);
-    Route::get('/loadCutOff', [CutoffController::class, 'index']);
+    // Route::get('/cutOff', [CutoffController::class, 'index']);
+    // Route::post('/upsertCutOff', [CutoffController::class, 'upsert']);
+    // Route::get('/lookupCutOff', [CutoffController::class, 'lookup']);
+    // Route::get('/getCutOff', [CutoffController::class, 'get']);
+    // Route::post('/deleteCutOff', [CutoffController::class, 'delete']);
+    // Route::post('/checkInUsedCutOff', [CutoffController::class, 'checkInUsed']);
+    // Route::post('/checkDuplicateCutOff', [CutoffController::class, 'checkDuplicate']);
+    // Route::get('/loadCutOff', [CutoffController::class, 'index']);
 
     Route::get('/rCType', [RCTypeController::class, 'index']);
     Route::post('/upsertRCType', [RCTypeController::class, 'upsert']);

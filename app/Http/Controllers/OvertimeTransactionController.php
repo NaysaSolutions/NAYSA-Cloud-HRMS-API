@@ -24,7 +24,7 @@ class OvertimeTransactionController extends Controller
     {
         $data = $request->validate([
             'jsonData' => 'required|array',
-            'jsonData.groupCode' => 'required|string|max:15',
+            'jsonData.groupCode' => 'nullable|string|max:15',
             'jsonData.branchCode' => 'nullable|string|max:15',
             'jsonData.deptCode' => 'nullable|string|max:15',
             'jsonData.employeeNo' => 'nullable|string|max:15',
@@ -55,15 +55,27 @@ class OvertimeTransactionController extends Controller
             'jsonData.otId' => 'nullable|string|max:50',
             'jsonData.otDate' => 'required|date',
             'jsonData.cutoffFrequency' => 'required|string|in:S,M,D',
+            'jsonData.cutoffCode' => 'required|string|max:8',
+            'jsonData.cutoffStartDate' => 'required|date',
+            'jsonData.cutoffEndDate' => 'required|date|after_or_equal:jsonData.cutoffStartDate',
             'jsonData.remarks' => 'nullable|string|max:4000',
             'jsonData.userCode' => 'required|string|max:100',
             'jsonData.rows' => 'required|array|min:1',
-            'jsonData.rows.*.groupId' => 'nullable|uuid',
+            'jsonData.rows.*.groupId' => 'nullable|string|max:200',
+            'jsonData.rows.*.lineNo' => 'nullable|integer|min:1',
             'jsonData.rows.*.empNo' => 'required|string|max:15',
             'jsonData.rows.*.otCode' => 'required|string|max:10',
-            'jsonData.rows.*.otDateDetail' => 'required|date',
+            'jsonData.rows.*.otDateDetail' => 'nullable|date',
+            'jsonData.rows.*.startDate' => 'required|date',
+            'jsonData.rows.*.endDate' => 'required|date|after_or_equal:jsonData.rows.*.startDate',
             'jsonData.rows.*.otHours' => 'required|numeric|min:0',
+            'jsonData.rows.*.otMinutes' => 'nullable|numeric|min:0',
+            'jsonData.rows.*.otRate' => 'nullable|numeric|min:0',
             'jsonData.rows.*.otAmount' => 'required|numeric|min:0',
+            'jsonData.rows.*.dailyRate' => 'nullable|numeric|min:0',
+            'jsonData.rows.*.hourRate' => 'nullable|numeric|min:0',
+            'jsonData.rows.*.mealAllow' => 'nullable|numeric|min:0',
+            'jsonData.rows.*.transpoAllow' => 'nullable|numeric|min:0',
         ]);
 
         return $this->runProcedure('Save', $this->encodeJsonData($data['jsonData']));
