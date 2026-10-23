@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EmployeeGovParams extends Controller
 {
-    //LOAD
+    //LOAD 
     public function index(Request $request) {
         try {
         $results = DB::select('EXEC sproc_PHP_Ref_EmployeeGovParams @mode = ?',['Load']);

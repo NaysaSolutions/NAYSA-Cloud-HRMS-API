@@ -564,11 +564,11 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteClient', [ClientController::class, 'delete']);
     Route::post('/checkInUsedClient', [ClientController::class, 'checkInUsed']);
 
-    Route::get('/employeeGovParams', [EmployeeGovParams::class, 'index']);
-    Route::post('/upsertEmployeeGovParams', [EmployeeGovParams::class, 'upsert']);
-
     Route::get('/employeeGovInfo', [EmployeeGovInfo::class, 'index']);
     Route::post('/upsertEmployeeGovInfo', [EmployeeGovInfo::class, 'upsert']);
+
+    Route::get('/employeeGovParams', [EmployeeGovParams::class, 'index']);
+    Route::post('/upsertEmployeeGovParams', [EmployeeGovParams::class, 'upsert']);
 
     Route::get('/area', [AreaController::class, 'index']);
     Route::post('/upsertArea', [AreaController::class, 'upsert']);
