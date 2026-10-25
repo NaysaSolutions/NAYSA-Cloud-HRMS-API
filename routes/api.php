@@ -163,12 +163,12 @@ Route::middleware('tenant')->group(function () {
 
     // Route::get('/getUser', [UserController::class, 'getUser']);
 
-    //Route::get('/refDeptGroup', [RefDeptGroupController::class, 'index']);
-   //Route::post('/upsertRefDeptGroup', [RefDeptGroupController::class, 'upsert']);
-    //Route::post('/deleteRefDeptGroup', [RefDeptGroupController::class, 'delete']);
-    //Route::post('/checkDuplicateRefDeptGroup', [RefDeptGroupController::class, 'checkDuplicate']);
-    //Route::post('/checkInUsedRefDeptGroup', [RefDeptGroupController::class, 'checkInUsed']);
-    //Route::get('/lookupRefDeptGroup', [RefDeptGroupController::class, 'lookup']);
+    Route::get('/refDeptGroup', [RefDeptGroupController::class, 'index']);
+    Route::post('/upsertRefDeptGroup', [RefDeptGroupController::class, 'upsert']);
+    Route::post('/deleteRefDeptGroup', [RefDeptGroupController::class, 'delete']);
+    Route::post('/checkDuplicateRefDeptGroup', [RefDeptGroupController::class, 'checkDuplicate']);
+    Route::post('/checkInUsedRefDeptGroup', [RefDeptGroupController::class, 'checkInUsed']);
+    Route::get('/lookupRefDeptGroup', [RefDeptGroupController::class, 'lookup']);
 
 
 
