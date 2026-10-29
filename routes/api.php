@@ -586,6 +586,10 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteEmployee', [EmployeeController::class, 'delete']);
     Route::post('/checkDuplicateEmployee', [EmployeeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedEmployee', [EmployeeController::class, 'checkInUsed']);
+    Route::post('/uploadEmployeePhoto', [EmployeeController::class, 'uploadPhoto']);
+    Route::get('/getEmployeePhoto', [EmployeeController::class, 'getPhoto']);
+
+
 
     Route::get('/refLoan', [LoanController::class, 'index']);
     Route::get('/lookupRefLoan', [LoanController::class, 'lookup']);

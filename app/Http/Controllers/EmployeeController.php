@@ -93,4 +93,47 @@ class EmployeeController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function uploadPhoto(Request $request)
+    {
+        $validated = $request->validate([
+            'EMP_NO' => 'required|string|max:15',
+            'EMP_PHOTO' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+        $empNo = $validated['EMP_NO'];
+        if (!DB::table('REFMAST_EMPLOYEE')->where('EMP_NO', $empNo)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Employee not found.'], 404);
+        }
+        $file = $request->file('EMP_PHOTO');
+        $directory = public_path('employee-photos');
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+            return response()->json(['success' => false, 'message' => 'Unable to create photo directory.'], 500);
+        }
+        $filename = (string) \Illuminate\Support\Str::uuid() . '.' . $file->extension();
+        $file->move($directory, $filename);
+        $path = 'employee-photos/' . $filename;
+        try {
+            $old = DB::table('REFMAST_EMPLOYEE')->where('EMP_NO', $empNo)->value('EMP_PHOTO');
+            DB::table('REFMAST_EMPLOYEE')->where('EMP_NO', $empNo)->update(['EMP_PHOTO' => $path]);
+            if ($old && str_starts_with($old, 'employee-photos/')) {
+                $oldPath = public_path($old);
+                if (is_file($oldPath)) @unlink($oldPath);
+            }
+            return response()->json(['success' => true, 'employeePhoto' => $path, 'photoUrl' => asset($path)]);
+        } catch (\Throwable $e) {
+            @unlink(public_path($path));
+            Log::error('Employee photo upload failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Unable to save employee photo.'], 500);
+        }
+    }
+
+    public function getPhoto(Request $request)
+    {
+        $validated = $request->validate(['EMP_NO' => 'required|string|max:15']);
+        $path = DB::table('REFMAST_EMPLOYEE')->where('EMP_NO', $validated['EMP_NO'])->value('EMP_PHOTO');
+        return response()->json(['success' => true, 'data' => [
+            'employeePhoto' => $path,
+            'photoUrl' => $path ? asset($path) : null,
+        ]]);
+    }
 }
