@@ -27,8 +27,11 @@ class OvertimeTransactionController extends Controller
             'jsonData.groupCode' => 'nullable|string|max:15',
             'jsonData.branchCode' => 'nullable|string|max:15',
             'jsonData.deptCode' => 'nullable|string|max:15',
+            'jsonData.clientCode' => 'nullable|string|max:15',
+            'jsonData.employeeStatus' => 'nullable|string|max:15',
+            'jsonData.positionCode' => 'nullable|string|max:15',
             'jsonData.employeeNo' => 'nullable|string|max:15',
-            'jsonData.payFrequency' => 'required|string|in:S,M,D',
+            'jsonData.payFrequency' => 'required|string|in:S,M,W',
         ]);
 
         return $this->runProcedure(
@@ -54,7 +57,8 @@ class OvertimeTransactionController extends Controller
             'jsonData' => 'required|array',
             'jsonData.otId' => 'nullable|string|max:50',
             'jsonData.otDate' => 'required|date',
-            'jsonData.cutoffFrequency' => 'required|string|in:S,M,D',
+            'jsonData.cutoffType' => 'required|string|in:S,M,W',
+            'jsonData.cutoffFrequency' => 'required|string|in:S1,S2,M,W1,W2,W3,W4',
             'jsonData.cutoffCode' => 'required|string|max:8',
             'jsonData.cutoffStartDate' => 'required|date',
             'jsonData.cutoffEndDate' => 'required|date|after_or_equal:jsonData.cutoffStartDate',
@@ -78,7 +82,14 @@ class OvertimeTransactionController extends Controller
             'jsonData.rows.*.transpoAllow' => 'nullable|numeric|min:0',
         ]);
 
-        return $this->runProcedure('Save', $this->encodeJsonData($data['jsonData']));
+        $allowed = ['S' => ['S1', 'S2'], 'M' => ['M'], 'W' => ['W1', 'W2', 'W3', 'W4']];
+        $input = $data['jsonData'];
+        if (!in_array($input['cutoffFrequency'], $allowed[$input['cutoffType']], true)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'jsonData.cutoffFrequency' => 'Cut-Off Frequency does not match Cut-Off Type.',
+            ]);
+        }
+        return $this->runProcedure('Save', $this->encodeJsonData($input));
     }
 
     public function post(Request $request)

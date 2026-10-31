@@ -615,17 +615,17 @@ Route::middleware('tenant')->group(function () {
     });
 
     
-    Route::prefix('leave-transaction')->middleware('auth:sanctum')->group(function () {
-        Route::post('/references', [LeaveTransactionController::class, 'references']);
-        Route::post('/employees', [LeaveTransactionController::class, 'employees']);
-        Route::post('/load', [LeaveTransactionController::class, 'load']);
-        Route::post('/get', [LeaveTransactionController::class, 'get']);
-        Route::post('/upsert', [LeaveTransactionController::class, 'upsert']);
-        Route::post('/delete', [LeaveTransactionController::class, 'delete']);
-        Route::post('/validate', [LeaveTransactionController::class, 'validateLeave']);
-        Route::post('/finalize', [LeaveTransactionController::class, 'finalizeLeave']);
-        Route::post('/unfinalize', [LeaveTransactionController::class, 'unfinalizeLeave']);
+    Route::prefix('leave-transaction')->controller(LeaveTransactionController::class)->group(function () {
+        Route::post('/list', 'index');
+        Route::get('/selectionReferences', 'selectionReferences');
+        Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/get', 'get');
+        Route::post('/save', 'save');
+        Route::post('/post', 'post');
+        Route::post('/cancel', 'cancel')->middleware('posting.credential');
+        Route::post('/history', 'history');
     });
+
 
     
     Route::prefix('overtimeTransactions')->controller(OvertimeTransactionController::class)->group(function () {
