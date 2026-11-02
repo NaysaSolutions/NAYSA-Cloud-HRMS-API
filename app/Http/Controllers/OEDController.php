@@ -57,6 +57,27 @@ class OEDController extends Controller
         return $this->runProcedure('Get', $this->encodeJsonData($data['jsonData']));
     }
 
+    public function navigate(Request $request)
+    {
+        $data = $request->validate([
+            'jsonData' => 'required|array',
+            'jsonData.oedId' => 'nullable|string|max:50',
+            'jsonData.oedNo' => 'nullable|string|max:20',
+            'jsonData.direction' => 'nullable|string|in:F,P,N,L',
+            'jsonData.branchCode' => 'nullable|string|max:30',
+        ]);
+
+        $input = $data['jsonData'];
+        $direction = strtoupper($input['direction'] ?? '');
+        if ($direction === '' && empty($input['oedId']) && empty($input['oedNo'])) {
+            throw ValidationException::withMessages([
+                'jsonData.oedNo' => 'Transaction No. is required for retrieval.',
+            ]);
+        }
+
+        return $this->runProcedure('Navigate', $this->encodeJsonData($input));
+    }
+
     public function save(Request $request)
     {
         $data = $request->validate([

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 
 
@@ -312,6 +312,7 @@ Route::middleware('tenant')->group(function () {
         Route::post('/list', 'index');
         Route::get('/selectionReferences', 'selectionReferences');
         Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/navigate', 'navigate');
         Route::post('/get', 'get');
         Route::post('/save', 'save');
         Route::post('/post', 'post');
@@ -319,6 +320,7 @@ Route::middleware('tenant')->group(function () {
         Route::post('/history', 'history');
         Route::post('/loadED', 'loadED');
         Route::post('/loadEDGL', 'loadEDGL');
+        
         // Payroll preview is read-only; restrict to authorized payroll users.
         Route::post('/preparePayrunOED', 'preparePayrunOED')->middleware('auth:sanctum');
     });
