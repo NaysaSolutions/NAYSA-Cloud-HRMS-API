@@ -30,6 +30,7 @@ use App\Http\Controllers\LeaveManagementController;
 use App\Http\Controllers\PayrollYearEndController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OvertimeController;
+use App\Http\Controllers\OEDController;
 use App\Http\Controllers\EmployeeStatusController;
 use App\Http\Controllers\GovTAXController;
 use App\Http\Controllers\GovHDMFController;
@@ -304,6 +305,21 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteRefOvertime', [OvertimeController::class, 'delete']);
     Route::post('/checkDuplicateRefOvertime', [OvertimeController::class, 'checkDuplicate']);
     Route::post('/checkInUsedRefOvertime', [OvertimeController::class, 'checkInUsed']);
+
+    Route::prefix('otherEarningsDeductions')->controller(OEDController::class)->group(function () {
+        Route::post('/list', 'index');
+        Route::get('/selectionReferences', 'selectionReferences');
+        Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/get', 'get');
+        Route::post('/save', 'save');
+        Route::post('/post', 'post');
+        Route::post('/cancel', 'cancel')->middleware('posting.credential');
+        Route::post('/history', 'history');
+        Route::post('/loadED', 'loadED');
+        Route::post('/loadEDGL', 'loadEDGL');
+        // Payroll preview is read-only; restrict to authorized payroll users.
+        Route::post('/preparePayrunOED', 'preparePayrunOED')->middleware('auth:sanctum');
+    });
 
     Route::get('/refEmployeeStatus', [EmployeeStatusController::class, 'index']);
     Route::get('/lookupRefEmployeeStatus', [EmployeeStatusController::class, 'lookup']);
