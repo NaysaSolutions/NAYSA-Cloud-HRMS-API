@@ -97,6 +97,7 @@ use App\Http\Controllers\RefDepartmentController;
 use App\Http\Controllers\RefLoanController;
 use App\Http\Controllers\RefEDController;
 use App\Http\Controllers\RefPayrollPeriodController;
+use App\Http\Controllers\PayrollOvertimeLedgerController;
 
 
 
@@ -328,6 +329,8 @@ Route::middleware('tenant')->group(function () {
     Route::post('/deleteRefEmployeeStatus', [EmployeeStatusController::class, 'delete']);
     Route::post('/checkDuplicateRefEmployeeStatus', [EmployeeStatusController::class, 'checkDuplicate']);
     Route::post('/checkInUsedRefEmployeeStatus', [EmployeeStatusController::class, 'checkInUsed']);
+
+    Route::post('/overtimeTransactions/ledger', [PayrollOvertimeLedgerController::class, 'index'])->middleware('auth:sanctum');
 
     //Printing
     Route::prefix('printing')->group(function () {
