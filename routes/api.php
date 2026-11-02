@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 
 
@@ -71,6 +71,7 @@ use App\Http\Controllers\LeaveTransactionController;
 use App\Http\Controllers\LoanManagementController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\OvertimeTransactionController;
+use App\Http\Controllers\SystemGeneratedController;
 
 
 
@@ -639,6 +640,21 @@ Route::middleware('tenant')->group(function () {
         Route::post('/history', 'history');
     });
 
+
+
+    Route::prefix('systemGeneratedTransactions')->controller(SystemGeneratedController::class)->group(function () {
+        Route::post('/list', 'index');
+        Route::get('/selectionReferences', 'selectionReferences');
+        Route::post('/selectionEmployees', 'selectionEmployees');
+        Route::post('/get', 'get');
+        Route::post('/save', 'save');
+        Route::post('/post', 'post');
+        Route::post('/cancel', 'cancel')->middleware('posting.credential');
+        Route::post('/history', 'history');
+        Route::post('/loadED', 'loadED');
+        Route::post('/loadEDGL', 'loadEDGL');
+        Route::post('/preparePayrun', 'preparePayrun');
+    });
 
 
     Route::prefix('loanTransactions')->controller(LoanManagementController::class)->group(function () {
